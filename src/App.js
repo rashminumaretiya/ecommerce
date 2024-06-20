@@ -1,25 +1,82 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Suspense, lazy } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Auth from "./presentation/Auth/Auth";
+import { Provider } from "react-redux";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./index.css";
+import store from "./store";
 
-function App() {
+const Home = lazy(() => import("./presentation/Home"));
+const About = lazy(() => import("./presentation/About"));
+const NotFound = lazy(() => import("./presentation/NotFound"));
+const Login = lazy(() => import("./presentation/Auth/login"));
+const Layout = lazy(() => import("./presentation/Layout"));
+const Cart = lazy(() => import("./presentation/Cart"));
+const Category = lazy(() => import("./presentation/Category"));
+
+const routes = [
+  {
+    path: "/",
+    element: (
+      <Auth>
+        <Home />
+      </Auth>
+    ),
+  },
+  {
+    path: "/about",
+    element: (
+      <Auth>
+        <About />
+      </Auth>
+    ),
+  },
+  {
+    path: "/login",
+    element: (
+      <Auth>
+        <Login />
+      </Auth>
+    ),
+  },
+  {
+    path: "/cart",
+    element: (
+      <Auth>
+        <Cart />
+      </Auth>
+    ),
+  },
+  {
+    path: "/category",
+    element: (
+      <Auth>
+        <Category />
+      </Auth>
+    ),
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
+];
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Suspense fallback="loading...">
+      <Provider store={store}>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<Layout />}>
+              {routes.map((data, i) => (
+                <Route key={i} path={data.path} element={data.element}></Route>
+              ))}
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </Provider>
+    </Suspense>
   );
-}
+};
 
 export default App;
